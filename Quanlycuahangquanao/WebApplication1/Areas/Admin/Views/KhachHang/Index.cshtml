@@ -1,0 +1,292 @@
+﻿@using WebApplication1.ViewModels
+@model PagedListViewModel<KhachHangIndexViewModel>
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    ViewBag.Title = "Quản lý khách hàng";
+}
+
+@section Styles {
+    <style>
+        .main-card {
+            max-width: 1200px;
+            margin: 32px auto;
+            padding: 32px;
+            background: var(--main-card-bg, #24262d);
+            border-radius: 18px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.09);
+        }
+
+        h2 {
+            font-weight: 700;
+            color: var(--main-txt, #fff);
+            margin-bottom: 22px;
+        }
+
+        .custom-search-box {
+            width: 100%;
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+            .custom-search-box input[type="text"] {
+                width: 100%;
+                padding: 12px 48px 12px 18px;
+                border-radius: 6px;
+                border: 1px solid #ddd;
+                font-size: 1.05rem;
+                background: var(--search-bg, #181a20);
+                color: var(--main-txt, #fff);
+                transition: border 0.2s;
+            }
+
+                .custom-search-box input[type="text"]:focus {
+                    border: 1.5px solid #63e6be;
+                    outline: none;
+                }
+
+            .custom-search-box .btn-search {
+                position: absolute;
+                right: 10px;
+                top: 7px;
+                background: #0063e5;
+                color: #fff;
+                border: none;
+                border-radius: 4px;
+                padding: 6px 10px;
+                font-size: 1.1rem;
+            }
+
+        .action-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+            .action-group .btn {
+                font-weight: 600;
+            }
+
+        .table-custom {
+            background: var(--table-bg, #16171b);
+            color: var(--main-txt, #fff);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+            .table-custom th, .table-custom td {
+                vertical-align: middle;
+                background: inherit;
+            }
+
+            .table-custom th {
+                background: #24262d;
+                color: #fff;
+                font-size: 1.04rem;
+                font-weight: 700;
+                border-bottom: 1.5px solid #2b2e36;
+            }
+
+            .table-custom tbody tr {
+                border-bottom: 1px solid #22232a;
+                transition: background 0.2s;
+            }
+
+                .table-custom tbody tr:hover {
+                    background: #292b32 !important;
+                }
+
+        .img-avatar {
+            width: 42px;
+            height: 42px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 2px solid #2b2e36;
+            background: #eee;
+        }
+
+        .btn-view, .btn-edit, .btn-del {
+            padding: 6px 10px;
+            border-radius: 6px;
+            color: #fff;
+            border: none;
+        }
+
+        .btn-view {
+            background: #29b6f6;
+        }
+
+        .btn-edit {
+            background: #43a047;
+        }
+
+        .btn-del {
+            background: #e53935;
+        }
+
+        .btn-view:hover {
+            background: #0288d1;
+        }
+
+        .btn-edit:hover {
+            background: #388e3c;
+        }
+
+        .btn-del:hover {
+            background: #c62828;
+        }
+
+        .pagination {
+            margin: 20px 0 0 0;
+            justify-content: center;
+        }
+
+            .pagination .page-item .page-link {
+                border-radius: 7px !important;
+                color: #007aff;
+                background: #181a20;
+                border: none;
+                margin: 0 3px;
+                font-weight: 600;
+                min-width: 40px;
+                text-align: center;
+            }
+
+            .pagination .page-item.active .page-link {
+                background: #007aff;
+                color: #fff;
+            }
+
+            .pagination .page-item.disabled .page-link {
+                color: #bbb;
+                background: #22232a;
+                pointer-events: none;
+            }
+
+        .alert {
+            margin-bottom: 16px;
+        }
+
+        :root, body {
+            --main-card-bg: #24262d;
+            --table-bg: #181a20;
+            --main-txt: #fff;
+            --search-bg: #22232a;
+        }
+
+            body:not(.dark-mode) {
+                --main-card-bg: #fff;
+                --table-bg: #f9f9fb;
+                --main-txt: #23262d;
+                --search-bg: #f6f6f8;
+            }
+    </style>
+}
+
+<div class="main-card">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Khách hàng</h2>
+        <div class="action-group">
+            <a href="@Url.Action("Create","KhachHang", new{area="Admin"})" class="btn btn-success">
+                <i class="bi bi-person-plus"></i> Tạo khách mới
+            </a>
+            <a href="@Url.Action("ExportExcel","KhachHang", new { area="Admin", search = Request.QueryString["search"] })"
+               class="btn btn-outline-success">
+                <i class="bi bi-file-earmark-excel"></i> Xuất Excel
+            </a>
+        </div>
+    </div>
+
+    <!-- Tìm kiếm -->
+    <form method="get" class="custom-search-box" action="@Url.Action("Index","KhachHang", new{area="Admin"})">
+        <input type="text"
+               name="search"
+               value="@Request.QueryString["search"]"
+               placeholder="Tìm kiếm khách hàng..." />
+        <button type="submit" class="btn-search"><i class="bi bi-search"></i></button>
+    </form>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    <div class="table-responsive">
+        <table class="table table-custom">
+            <thead>
+                <tr>
+                    <th style="width:50px;">#</th>
+                    <th style="width:66px;">Ảnh</th>
+                    <th style="width:180px;">Tên khách</th>
+                    <th style="width:130px;">Số điện thoại</th>
+                    <th style="width:210px;">Email</th>
+                    <th style="width:165px;">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Items.Count() == 0)
+                {
+                    <tr>
+                        <td colspan="6" class="text-danger text-center">Không có khách hàng nào.</td>
+                    </tr>
+                }
+                else
+                {
+                    foreach (var kh in Model.Items)
+                    {
+                        <tr>
+                            <td>@kh.MaKH</td>
+                            <td>
+                                <img src="@Url.Content(string.IsNullOrEmpty(kh.AnhDaiDien) ? "~/Asset/images/default-avatar.png" : "~/Asset/images/" + kh.AnhDaiDien)"
+                                     class="img-avatar" alt="avatar" />
+                            </td>
+                            <td>@kh.TenKH</td>
+                            <td>@kh.SoDienThoai</td>
+                            <td>@kh.Email</td>
+                            <td>
+                                <a class="btn btn-view" title="Chi tiết"
+                                   href="@Url.Action("Details","KhachHang", new{area="Admin", id=kh.MaKH})">
+                                    <i class="bi bi-eye-fill"></i>
+                                </a>
+                                <a class="btn btn-edit" title="Chỉnh sửa"
+                                   href="@Url.Action("Edit","KhachHang", new{area="Admin", id=kh.MaKH})">
+                                    <i class="bi bi-pencil-fill"></i>
+                                </a>
+                                @using (Html.BeginForm("Delete", "KhachHang",
+                                    new { area = "Admin", id = kh.MaKH },
+                                    FormMethod.Post,
+                                    new { onsubmit = "return confirm('Bạn có chắc muốn xóa khách hàng này?');", @class = "d-inline" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-del" title="Xóa">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </button>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+    <!-- Paging -->
+    <nav>
+        <ul class="pagination">
+            <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
+                <a class="page-link" href="@Url.Action("Index", new { area="Admin", page = Model.CurrentPage - 1, search = Request.QueryString["search"] })">« Trước</a>
+            </li>
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(Model.CurrentPage==i ? "active" : "")">
+                    <a class="page-link" href="@Url.Action("Index", new { area="Admin", page = i, search = Request.QueryString["search"] })">@i</a>
+                </li>
+            }
+            <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
+                <a class="page-link" href="@Url.Action("Index", new { area="Admin", page = Model.CurrentPage + 1, search = Request.QueryString["search"] })">Tiếp »</a>
+            </li>
+        </ul>
+    </nav>
+</div>

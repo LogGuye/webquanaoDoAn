@@ -1,0 +1,168 @@
+﻿@{
+    ViewBag.Title = "Đăng ký";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="login-bg">
+    <div class="login-form">
+        <h2 class="login-title">Đăng ký</h2>
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+            <div class="input-wrap">
+                <i class="fa fa-envelope"></i>
+                <input name="Email" type="email" placeholder="Email" required />
+            </div>
+            <div class="input-wrap">
+                <i class="fa fa-phone"></i>
+                <input name="SoDienThoai" placeholder="Số điện thoại" required />
+            </div>
+            <div class="input-wrap">
+                <i class="fa fa-lock"></i>
+                <input name="MatKhau" type="password" placeholder="Mật khẩu" required />
+            </div>
+            <div class="input-wrap">
+                <i class="fa fa-user-circle"></i>
+                <input name="TenKH" placeholder="Tên khách hàng" required />
+            </div>
+            <button type="submit" class="login-btn">Đăng ký</button>
+            if (ViewBag.Error != null)
+            {
+                <div class="form-error">@ViewBag.Error</div>
+            }
+            if (ViewBag.Success != null)
+            {
+                <div class="form-success">@ViewBag.Success</div>
+            }
+        }
+        <div class="form-links">
+            <a href="@Url.Action("Login")">Đăng nhập</a>
+        </div>
+    </div>
+</div>
+<!-- CSS như cũ, giữ lại toàn bộ các class đẹp -->
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+<style>
+    .login-bg {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 80vh;
+        width: 100vw;
+    }
+
+    .login-form {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 8px 32px #0002, 0 2px 6px #4441;
+        padding: 36px 36px 28px 36px;
+        min-width: 330px;
+        min-height: 390px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 38px;
+    }
+
+    .login-title {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #0e3a68;
+        margin-bottom: 24px;
+        text-align: center;
+        letter-spacing: 1px;
+    }
+
+    .input-wrap {
+        display: flex;
+        align-items: center;
+        background: #f7f7fa;
+        border-radius: 10px;
+        border: 1.5px solid #dde6ef;
+        margin-bottom: 18px;
+        padding: 7px 12px 7px 9px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+        .input-wrap i {
+            color: #38b6ff;
+            font-size: 1.1rem;
+            margin-right: 8px;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .input-wrap input {
+            border: none;
+            background: none;
+            outline: none;
+            font-size: 1rem;
+            padding: 7px 0;
+            flex: 1;
+            color: #2d2d2d;
+        }
+
+            .input-wrap input:focus {
+                background: #f0fbff;
+            }
+
+    .login-btn {
+        width: 100%;
+        padding: 10px 0;
+        background: linear-gradient(90deg,#ffbe8e,#ff6075);
+        color: #fff;
+        font-weight: 700;
+        font-size: 1.1rem;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        margin-bottom: 12px;
+        margin-top: 2px;
+        transition: background 0.22s;
+        box-shadow: 0 2px 8px #ff607544;
+    }
+
+        .login-btn:hover {
+            background: linear-gradient(90deg,#ff6075,#ffbe8e);
+        }
+
+    .form-links {
+        margin-top: 8px;
+        text-align: center;
+    }
+
+        .form-links a {
+            color: #097fd2;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.16s;
+        }
+
+            .form-links a:hover {
+                color: #ff6075;
+                text-decoration: underline;
+            }
+
+    .form-error {
+        color: #e74c3c;
+        background: #fff1f0;
+        border-radius: 8px;
+        margin-top: 7px;
+        padding: 7px 15px 6px 11px;
+        font-size: 1rem;
+        border: 1.3px solid #ffcac5;
+        text-align: center;
+    }
+
+    .form-success {
+        color: #3cab33;
+        background: #f0ffef;
+        border-radius: 8px;
+        margin-top: 7px;
+        padding: 7px 15px 6px 11px;
+        font-size: 1rem;
+        border: 1.3px solid #aaffc0;
+        text-align: center;
+    }
+</style>

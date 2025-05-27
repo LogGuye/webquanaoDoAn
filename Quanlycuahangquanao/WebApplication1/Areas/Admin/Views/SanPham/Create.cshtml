@@ -1,0 +1,139 @@
+﻿@model WebApplication1.ViewModels.ProductCreateEditViewModel
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    ViewBag.Title = "Thêm sản phẩm";
+}
+
+<h2>Thêm sản phẩm</h2>
+
+@using (Html.BeginForm("Create", "SanPham", new { area = "Admin" }, FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                @Html.LabelFor(m => m.TenSP)
+                @Html.TextBoxFor(m => m.TenSP, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.TenSP, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="mb-3">
+                @Html.LabelFor(m => m.GiaBan)
+                @Html.TextBoxFor(m => m.GiaBan, new { @class = "form-control", type = "number", step = "0.01" })
+                @Html.ValidationMessageFor(m => m.GiaBan, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="mb-3">
+                @Html.LabelFor(m => m.SoLuong)
+                @Html.TextBoxFor(m => m.SoLuong, new { @class = "form-control", type = "number" })
+                @Html.ValidationMessageFor(m => m.SoLuong, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="mb-3">
+                @Html.LabelFor(m => m.GiamGia)
+                @Html.TextBoxFor(m => m.GiamGia, new { @class = "form-control", type = "number", step = "0.01" })
+            </div>
+
+            <div class="mb-3">
+                @Html.LabelFor(m => m.MoTa)
+                @Html.TextAreaFor(m => m.MoTa, 3, 0, new { @class = "form-control" })
+            </div>
+
+            @* ==== Dropdown cho string TrangThai ==== *@
+            <div class="mb-3">
+                @Html.LabelFor(m => m.TrangThai, "Trạng thái")
+                @Html.DropDownListFor(m => m.TrangThai,
+                    new List<SelectListItem> {
+                        new SelectListItem { Value = "True",  Text = "Mở bán" },
+                        new SelectListItem { Value = "False", Text = "Ngưng bán" }
+                    },
+                    "-- Chọn trạng thái --",
+                    new { @class = "form-select" }
+                )
+                @Html.ValidationMessageFor(m => m.TrangThai, "", new { @class = "text-danger" })
+            </div>
+
+            @* Checkbox cho bool LaSanPhamMoi *@
+            <div class="form-check mb-3">
+                @Html.CheckBox(
+                    "LaSanPhamMoi",
+                    Model.LaSanPhamMoi.GetValueOrDefault(false),
+                    new { @class = "form-check-input", id = "chkMoi" }
+                )
+                <label class="form-check-label" for="chkMoi">Sản phẩm mới</label>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label>Chọn danh mục</label>
+                <table class="table table-bordered table-sm">
+                    <thead class="table-light">
+                        <tr><th>Chọn</th><th>Mã</th><th>Tên</th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var dm in Model.AllCategories)
+                        {
+                            <tr>
+                                <td>
+                                    <input type="checkbox"
+                                           value="@dm.Value"
+                                           class="cat-chk form-check-input" />
+                                </td>
+                                <td>@dm.Value</td>
+                                <td>@dm.Text</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <button type="button" id="btnAddCats" class="btn btn-sm btn-primary mb-2">Xác nhận</button>
+
+                <label>Danh mục đã chọn:</label>
+                <div id="selCats" class="mb-2"></div>
+                @Html.ValidationMessageFor(m => m.SelectedCategoryIds, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="mb-3">
+                @Html.LabelFor(m => m.ImageFile, "Chọn ảnh sản phẩm")
+                <input type="file" name="ImageFile" class="form-control" />
+            </div>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-success">
+        <i class="bi bi-save"></i> Tạo mới
+    </button>
+    @Html.ActionLink("Hủy", "Index", new { area = "Admin" }, new { @class = "btn btn-secondary ms-2" })
+}
+
+@section Scripts {
+    <script>
+        var selected = [];
+
+        $('#btnAddCats').click(function () {
+            selected = [];
+            $('.cat-chk:checked').each(function () {
+                var id = $(this).val();
+                var txt = $(this).closest('tr').find('td:eq(2)').text();
+                selected.push({ id, txt });
+            });
+            renderSelected();
+        });
+
+        function renderSelected() {
+            $('#selCats').empty();
+            $('input[name="SelectedCategoryIds"]').remove();
+            selected.forEach(function (c) {
+                $('#selCats').append(
+                    `<span class="badge bg-info text-dark me-1">${c.txt}</span>`
+                );
+                $('#selCats').after(
+                    `<input type="hidden" name="SelectedCategoryIds" value="${c.id}" />`
+                );
+            });
+        }
+    </script>
+}

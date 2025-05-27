@@ -1,0 +1,96 @@
+﻿@model IEnumerable<WebApplication1.Models.SanPham>
+@{
+    ViewBag.Title = "Fashion Planet | Trang chủ";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .banner-home {
+        width: 100%; max-width: 1100px; margin: 38px auto 36px auto;
+        background: linear-gradient(90deg, #e0e6ee 20%, #d2dae7 100%);
+        box-shadow: 0 4px 40px #0001;
+        border-radius: 22px;
+        text-align: center; padding: 42px 10px 32px 10px;
+        font-weight: bold;
+        font-size: 2.1rem;
+        letter-spacing: 2px;
+        position: relative;
+        color: #333;
+        min-height: 120px;
+    }
+    .banner-home .banner-title { font-size: 2.2rem; color: #333; font-weight: 800; }
+    .banner-home .banner-sub { font-size: 1.2rem; color: #333; font-weight: 400; margin-top: 10px; }
+    .categories-bar {
+        width: 100%; max-width: 1100px; margin: 0 auto 28px auto; display: flex; gap: 38px;
+        justify-content: center; align-items: flex-end; padding: 16px 0 16px 0;
+        background: #fff; border-radius: 15px;
+        box-shadow: 0 2px 8px #0001;
+    }
+    .category-item {
+        display: flex; flex-direction: column; align-items: center; cursor: pointer;
+        min-width: 85px; padding: 7px 0 2px 0;
+        color: #444; font-weight: 600; transition: color .15s;
+    }
+    .category-item.active, .category-item:hover { color: #00bfff; }
+    .category-item img, .category-item svg { width: 44px; height: 44px; margin-bottom: 2px;}
+    .category-item span { margin-top: 2px; font-size: 1.04rem; }
+    .products-list { width: 100%; max-width: 1120px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; }
+    .media (max-width: 900px) { .products-list { grid-template-columns: repeat(2,1fr);} }
+    .media (max-width: 600px) { .products-list { grid-template-columns:1fr; } }
+    .product-card {
+        background: #fff; border-radius: 20px; box-shadow: 0 4px 32px #0001;
+        padding: 18px 18px 19px 18px; display: flex; flex-direction: column; align-items: center;
+        transition: box-shadow .18s, transform .15s;
+        position: relative;
+    }
+    .product-card:hover { box-shadow: 0 8px 32px #56b6ff40; transform: translateY(-6px) scale(1.025);}
+    .product-img { width: 100%; max-width: 140px; height: 140px; border-radius: 16px; object-fit: cover; margin-bottom: 12px; }
+    .product-title { font-weight: bold; font-size: 1.09rem; color: #222; margin-bottom: 7px; text-align:center;}
+    .product-desc { font-size: 0.98rem; color: #888; margin-bottom: 7px; min-height:36px; text-align:center;}
+    .product-price { font-weight: bold; color: #00bfff; margin-bottom: 12px; font-size: 1.12rem;}
+    .product-actions { display: flex; gap: 9px; margin-top: 8px; }
+    .btn-detail, .btn-buy {
+        border-radius: 13px; border: none; padding: 5px 15px;
+        font-size: 0.98rem; font-weight: 600; text-decoration: none;
+        transition: background .15s, color .15s; cursor: pointer;
+    }
+    .btn-detail { background: #eef5ff; color: #0986d7;}
+    .btn-detail:hover { background: #00bfff; color: #fff;}
+    .btn-buy { background: #ffb570; color: #fff;}
+    .btn-buy:hover { background: #ff3a55; color: #fff;}
+</style>
+
+<div class="banner-home">
+    <div class="banner-title">
+        <span style="font-size:2rem;">🌟</span> Fashion Planet <span style="font-size:2rem;">🌟</span>
+    </div>
+    <div class="banner-sub">Thời trang hàng hiệu – Giá tận xưởng</div>
+</div>
+
+<div class="categories-bar">
+    <div class="category-item active"><img src="~/Assets/Categories/new.png" alt="new" /><span>Sản phẩm mới</span></div>
+    <div class="category-item"><img src="~/Assets/Categories/ao.png" alt="áo" /><span>Áo</span></div>
+    <div class="category-item"><img src="~/Assets/Categories/quan.png" alt="quần" /><span>Quần</span></div>
+    <div class="category-item"><img src="~/Assets/Categories/aothun.png" alt="áo thun" /><span>Áo thun</span></div>
+    <div class="category-item"><img src="~/Assets/Categories/aokhoac.png" alt="áo khoác" /><span>Áo khoác</span></div>
+    <div class="category-item"><img src="~/Assets/Categories/phukien.png" alt="phụ kiện" /><span>Phụ kiện</span></div>
+    <div class="category-item"><img src="~/Assets/Categories/polo.png" alt="áo polo" /><span>Áo polo</span></div>
+    <div class="category-item"><img src="~/Assets/Categories/somi.png" alt="áo sơ mi" /><span>Áo sơ mi</span></div>
+</div>
+
+<h2 style="font-weight:bold;margin:24px 0 20px 36px;">Sản phẩm mới nhất</h2>
+<div class="products-list">
+    @foreach (var sp in Model)
+    {
+        <div class="product-card">
+            <img class="product-img" src="@(string.IsNullOrEmpty(sp.HinhAnh) ? Url.Content("~/Assets/images/images-default.png") : Url.Content(sp.HinhAnh))" alt="Ảnh sản phẩm" />
+            <div class="product-title">@sp.TenSP</div>
+            <div class="product-desc">@sp.MoTa</div>
+            <div class="product-price">@String.Format("{0:n0}", sp.GiaBan) đ</div>
+            <div class="product-actions">
+                <a href="@Url.Action("Details", "SanPham", new { id = sp.MaSP })" class="btn-detail"><i class="fa fa-eye"></i> Xem</a>
+                <a href="@Url.Action("AddToCart", "GioHang", new { id = sp.MaSP })" class="btn-buy"><i class="fa fa-cart-plus"></i> Mua ngay</a>
+            </div>
+        </div>
+    }
+</div>

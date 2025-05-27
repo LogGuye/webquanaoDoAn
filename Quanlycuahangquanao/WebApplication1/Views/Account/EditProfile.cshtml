@@ -1,0 +1,29 @@
+﻿@model WebApplication1.Models.KhachHang
+@{
+    ViewBag.Title = "Sửa thông tin tài khoản";
+    var avatar = string.IsNullOrEmpty(Model.AnhDaiDien) ? "/Assets/Avatar/avatar-default.png" : Model.AnhDaiDien;
+}
+
+<div class="profile-container" style="max-width:480px;margin:38px auto;padding:32px;background:#fff;border-radius:16px;box-shadow:0 4px 24px #0001;">
+    <h2 style="text-align:center;font-weight:bold;margin-bottom:24px;">Sửa thông tin tài khoản</h2>
+    @using (Html.BeginForm("EditProfile", "Account", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+        <div style="text-align:center;">
+            <img src="@avatar" style="width:100px;height:100px;border-radius:50%;object-fit:cover;border:3px solid #22aaff;margin-bottom:12px;" /><br />
+            <input type="file" name="AnhDaiDien" accept="image/*" style="margin-top:7px;" />
+        </div>
+        <div style="margin:16px 0;">
+            <label>Họ tên</label>
+            <input type="text" name="TenKH" value="@Model.TenKH" class="form-control" style="width:100%;padding:8px 10px;margin-bottom:8px;" required />
+            <label>Email</label>
+            <input type="email" name="Email" value="@Model.Email" class="form-control" style="width:100%;padding:8px 10px;margin-bottom:8px;" required />
+            <label>Số điện thoại</label>
+            <input type="text" name="SoDienThoai" value="@Model.SoDienThoai" class="form-control" style="width:100%;padding:8px 10px;" required />
+        </div>
+        <div style="text-align:center;margin-top:15px;">
+            <button type="submit" class="btn" style="padding:9px 38px;border-radius:23px;background:#008bff;color:#fff;font-weight:bold;">Lưu thay đổi</button>
+            <a href="@Url.Action("Profile")" style="margin-left:15px;color:#008bff;text-decoration:underline;">Hủy</a>
+        </div>
+    }
+</div>

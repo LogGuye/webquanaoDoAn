@@ -1,0 +1,180 @@
+﻿@using System.Web.Mvc;
+@model WebApplication1.ViewModels.PagedListViewModel<WebApplication1.ViewModels.DonHangIndexViewModel>
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    ViewBag.Title = "Quản lý đơn hàng";
+    var search = ViewBag.Search as string ?? "";
+}
+@section Styles {
+    <style>
+        .main-card {
+            max-width: 1100px;
+            margin: 32px auto;
+            padding: 32px;
+            background: var(--main-card-bg, #24262d);
+            border-radius: 18px;
+        }
+
+        h2 {
+            font-weight: 700;
+            color: var(--main-txt, #fff);
+            margin-bottom: 22px;
+        }
+
+        .table-custom th, .table-custom td {
+            vertical-align: middle;
+            background: inherit;
+            text-align: center;
+        }
+
+        .table-custom {
+            background: var(--table-bg, #16171b);
+            color: var(--main-txt, #fff);
+            border-radius: 12px;
+        }
+
+        .btn-status {
+            padding: 6px 9px;
+            border-radius: 6px;
+            border: none;
+        }
+
+        .pagination {
+            margin: 20px 0 0 0;
+            justify-content: center;
+        }
+
+            .pagination .page-item .page-link {
+                border-radius: 7px !important;
+                color: #007aff;
+                background: #181a20;
+                border: none;
+                margin: 0 3px;
+                font-weight: 600;
+                min-width: 40px;
+                text-align: center;
+            }
+
+            .pagination .page-item.active .page-link {
+                background: #007aff;
+                color: #fff;
+            }
+
+            .pagination .page-item.disabled .page-link {
+                color: #bbb;
+                background: #22232a;
+                pointer-events: none;
+            }
+
+        :root, body {
+            --main-card-bg: #24262d;
+            --table-bg: #181a20;
+            --main-txt: #fff;
+        }
+
+            body:not(.dark-mode) {
+                --main-card-bg: #fff;
+                --table-bg: #f9f9fb;
+                --main-txt: #23262d;
+            }
+    </style>
+}
+<div class="main-card">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Đơn hàng</h2>
+        <div>
+            <a href="@Url.Action("Create","DonHang", new{area="Admin"})" class="btn btn-success me-2">
+                <i class="bi bi-plus-circle"></i> Tạo mới
+            </a>
+            <a href="@Url.Action("ExportExcel","DonHang", new { area="Admin", search=search })" class="btn btn-outline-success">
+                <i class="bi bi-file-earmark-excel"></i> Xuất Excel
+            </a>
+        </div>
+    </div>
+    <form method="get" class="mb-3" action="@Url.Action("Index","DonHang", new{area="Admin"})">
+        <input type="text" name="search" value="@search" class="form-control me-2" placeholder="Tìm kiếm đơn hàng..." />
+        <button type="submit" class="btn btn-outline-primary mt-2"><i class="bi bi-search"></i></button>
+    </form>
+    <div class="table-responsive">
+        <table class="table table-custom">
+            <thead>
+                <tr>
+                    <th style="width:70px;">#</th>
+                    <th style="width:150px;">Ngày tạo</th>
+                    <th style="width:160px;">Khách hàng</th>
+                    <th style="width:240px;">Địa chỉ giao</th>
+                    <th style="width:120px;">Đơn giá</th>
+                    <th style="width:120px;">Sau giảm giá</th>
+                    <th style="width:140px;">Trạng thái</th>
+                    <th style="width:180px;">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Items.Count() == 0)
+                {
+                    <tr>
+                        <td colspan="8" class="text-danger text-center">Không có đơn hàng nào.</td>
+                    </tr>
+                }
+                else
+                {
+                    foreach (var d in Model.Items)
+                    {
+                        <tr>
+                            <td>@d.MaDonHang</td>
+                            <td>@d.NgayDat.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>@d.TenKH</td>
+                            <td>@d.DiaChiGiao</td>
+                            <td>@string.Format("{0:N0}₫", d.TongTien)</td>
+                            <td>@string.Format("{0:N0}₫", d.TongTienSauGiam)</td>
+                            <td>
+                                <span class="badge @(d.TrangThai=="Hoàn thành"?"bg-success": d.TrangThai=="Đang giao"?"bg-warning":"bg-secondary")">
+                                    @d.TrangThai
+                                </span>
+                            </td>
+                            <td>
+                                @if (d.TrangThai != "Hoàn thành")
+                                {
+                                    using (Html.BeginForm("UpdateTrangThai", "DonHang", new { area = "Admin", id = d.MaDonHang }, FormMethod.Post, new { @class = "d-inline" }))
+                                    {
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-outline-primary btn-status" title="Chuyển trạng thái">
+                                            <i class="bi bi-arrow-repeat"></i>
+                                        </button>
+                                    }
+                                }
+                                <a class="btn btn-sm btn-info ms-1" href="@Url.Action("Details","DonHang", new{area="Admin", id=d.MaDonHang})" title="Chi tiết">
+                                    <i class="bi bi-eye-fill"></i>
+                                </a>
+                                @using (Html.BeginForm("Delete", "DonHang", new { area = "Admin", id = d.MaDonHang }, FormMethod.Post, new { onsubmit = "return confirm('Chắc chắn xóa?');", @class = "d-inline ms-1" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    <button class="btn btn-sm btn-danger btn-status" title="Xóa">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+    <!-- Paging -->
+    <nav>
+        <ul class="pagination">
+            <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
+                <a class="page-link" href="@Url.Action("Index", new { area="Admin", page = Model.CurrentPage - 1, search = Request.QueryString["search"] })">« Trước</a>
+            </li>
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(Model.CurrentPage==i ? "active" : "")">
+                    <a class="page-link" href="@Url.Action("Index", new { area="Admin", page = i, search = Request.QueryString["search"] })">@i</a>
+                </li>
+            }
+            <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
+                <a class="page-link" href="@Url.Action("Index", new { area="Admin", page = Model.CurrentPage + 1, search = Request.QueryString["search"] })">Tiếp »</a>
+            </li>
+        </ul>
+    </nav>
+</div>

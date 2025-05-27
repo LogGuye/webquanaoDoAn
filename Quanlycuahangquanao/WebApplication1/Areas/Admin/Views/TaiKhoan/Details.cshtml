@@ -1,0 +1,73 @@
+﻿@model WebApplication1.ViewModels.TaiKhoanDetailsViewModel
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    ViewBag.Title = "Chi tiết tài khoản";
+}
+
+@section Styles {
+    <style>
+        .details-box {
+            max-width: 430px;
+            margin: 40px auto;
+            background: var(--main-card-bg, #24262d);
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.10);
+            padding: 40px 35px;
+        }
+
+        .details-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 18px;
+            color: var(--main-txt,#fff);
+        }
+
+        .details-row {
+            margin-bottom: 20px;
+        }
+
+        .details-label {
+            font-weight: 600;
+            color: #57f1e6;
+        }
+
+        .details-value {
+            font-family: 'consolas',monospace;
+        }
+
+        body:not(.dark-mode) .details-box {
+            background: #fff;
+        }
+    </style>
+}
+<div class="details-box">
+    <div class="details-title">Thông tin tài khoản</div>
+    <div class="details-row">
+        <span class="details-label"># Mã:</span>
+        <span class="details-value">@Model.MaTK</span>
+    </div>
+    <div class="details-row">
+        <span class="details-label">Email (Tài khoản):</span>
+        <span class="details-value">@Model.Email</span>
+    </div>
+    <div class="details-row">
+        <span class="details-label">Mật khẩu:</span>
+        <span class="details-value">••••••••••</span>
+        <span style="font-size:12px;color:#aaa;" title="@Model.MatKhau">(ẩn)</span>
+    </div>
+    <div class="details-row">
+        <span class="details-label">Loại tài khoản:</span>
+        <span class="details-value">@Model.TenLoaiTK</span>
+    </div>
+    <div class="details-row">
+        <span class="details-label">Ngày tạo:</span>
+        <span class="details-value">@Model.NgayTao</span>
+    </div>
+    <div class="details-row">
+        <span class="details-label">Trạng thái:</span>
+        <span class="details-value">@Model.TrangThai</span>
+    </div>
+    <div>
+        @Html.ActionLink("Quay lại", "Index", null, new { @class = "btn btn-secondary" })
+    </div>
+</div>

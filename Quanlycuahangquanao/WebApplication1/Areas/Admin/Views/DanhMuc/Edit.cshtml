@@ -1,0 +1,23 @@
+﻿@model WebApplication1.ViewModels.DanhMucCreateEditViewModel
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    ViewBag.Title = "Chỉnh sửa danh mục";
+}
+
+<div class="container-fluid py-4">
+    <h2 class="text-white mb-4">Chỉnh sửa danh mục</h2>
+    @using (Html.BeginForm("Edit", "DanhMuc", new { area = "Admin", id = Model.MaDanhMuc }, FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.MaDanhMuc)
+            <div class="mb-3">
+                @Html.LabelFor(m => m.TenDanhMuc, htmlAttributes: new { @class = "form-label text-white" })
+                @Html.TextBoxFor(m => m.TenDanhMuc, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.TenDanhMuc, "", new { @class = "text-danger" })
+            </div>
+            <button type="submit" class="btn btn-primary" onclick="return confirm('Bạn có chắc muốn lưu?');">
+                Lưu thay đổi
+            </button>
+            <a href="@Url.Action("Index")" class="btn btn-secondary ms-2">Hủy</a>
+        }
+    </div>

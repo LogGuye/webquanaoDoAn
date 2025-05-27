@@ -1,0 +1,256 @@
+﻿@using System.Web.Mvc;
+@model WebApplication1.ViewModels.DonHangCreateViewModel
+@using WebApplication1.ViewModels
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    ViewBag.Title = "Tạo đơn hàng";
+    if (Model.SanPhams == null)
+    {
+        Model.SanPhams = new List<SanPhamChonViewModel>();
+    }
+
+}
+
+@section Styles {
+    <style>
+        .main-card {
+            max-width: 900px;
+            margin: 32px auto;
+            padding: 32px;
+            background: var(--main-card-bg, #24262d);
+            border-radius: 16px;
+        }
+
+        label {
+            color: var(--main-txt, #fff);
+            font-weight: 600;
+        }
+
+        .form-control, .form-select {
+            background: var(--table-bg, #181a20);
+            color: var(--main-txt, #fff);
+        }
+
+        .table-custom th, .table-custom td {
+            text-align: center;
+        }
+
+        .table-custom {
+            background: var(--table-bg, #181a20);
+            color: var(--main-txt, #fff);
+            border-radius: 10px;
+        }
+
+            .table-custom input[type="number"] {
+                width: 70px;
+                text-align: right;
+            }
+
+        .search-row {
+            margin-bottom: 18px;
+        }
+
+        .product-row.selected {
+            background: #314e89 !important;
+        }
+
+        .total-money {
+            font-size: 1.35rem;
+            font-weight: bold;
+            color: #00e676;
+        }
+
+        :root, body {
+            --main-card-bg: #24262d;
+            --table-bg: #181a20;
+            --main-txt: #fff;
+        }
+
+            body:not(.dark-mode) {
+                --main-card-bg: #fff;
+                --table-bg: #f9f9fb;
+                --main-txt: #23262d;
+            }
+    </style>
+}
+<h2>Tạo đơn hàng</h2>
+@using (Html.BeginForm("Create", "DonHang", FormMethod.Post, new { area = "Admin" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="main-card">
+        <div class="row mb-3">
+            <div class="col-md-6">
+                @Html.LabelFor(m => m.TenKH)
+                @Html.TextBoxFor(m => m.TenKH, new { @class = "form-control", placeholder = "Nhập tên khách hàng" })
+                @Html.ValidationMessageFor(m => m.TenKH, null, new { @class = "text-danger" })
+            </div>
+            <div class="col-md-6">
+                @Html.LabelFor(m => m.DiaChiNhan, "Địa chỉ nhận")
+                @Html.TextBoxFor(m => m.DiaChiNhan, new { @class = "form-control", placeholder = "Nhập địa chỉ giao hàng" })
+                @Html.ValidationMessageFor(m => m.DiaChiNhan, null, new { @class = "text-danger" })
+            </div>
+            <div class="form-group">
+                <label>Số điện thoại:</label>
+                <input type="text" name="SoDienThoai" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label>Mã giảm giá:</label>
+                <input type="text" name="MaGiamGia" class="form-control" />
+            </div>
+        </div>
+        <div class="search-row row mb-2">
+            <div class="col-8">
+                <input type="text" id="searchSanPham" class="form-control" placeholder="Tìm kiếm sản phẩm..." />
+            </div>
+            <div class="col-4 text-end">
+                <span class="total-money">Tổng tiền: <span id="tongTien">0 ₫</span></span>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-custom" id="productTable">
+                <thead>
+                    <tr>
+                        <th>Chọn</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Giá</th>
+                        <th>Giảm (%)</th>
+                        <th>Còn lại</th>
+                        <th style="width:110px;">Số lượng</th>
+                        <th>Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.SanPhams.Count; i++)
+                    {
+                        var sp = Model.SanPhams[i];
+                        <tr>
+                            <td>
+                                <input type="hidden" name="SanPhamChons[@i].IsChecked" value="false" />
+                                <input type="checkbox"
+                                       name="SanPhamChons[@i].IsChecked"
+                                       value="true"
+                                       @(sp.IsChecked ? "checked" : "")
+                                       onchange="toggleRow(this)" />
+                            </td>
+                            <td>
+                                @sp.TenSP
+                                <input type="hidden" name="SanPhamChons[@i].TenSP" value="@sp.TenSP" />
+                                <input type="hidden" name="SanPhamChons[@i].MaSP" value="@sp.MaSP" />
+                            </td>
+                            <td>
+                                @string.Format("{0:N0}₫", sp.GiaBan)
+                                <input type="hidden" name="SanPhamChons[@i].GiaBan" value="@sp.GiaBan" />
+                            </td>
+                            <td>
+                                @sp.GiamGia
+                                <input type="hidden" name="SanPhamChons[@i].GiamGia" value="@sp.GiamGia" />
+                            </td>
+                            <td>
+                                @sp.SoLuongTon
+                                <input type="hidden" name="SanPhamChons[@i].SoLuongTon" value="@sp.SoLuongTon" />
+                            </td>
+                            <td>
+                                <input type="number"
+                                       name="SanPhamChons[@i].SoLuong"
+                                       min="1"
+                                       max="@sp.SoLuongTon"
+                                       class="form-control sl-input"
+                                       value="@sp.SoLuong"
+                                       @(sp.IsChecked ? "" : "disabled")
+                                       onchange="updateRow(this)" />
+                            </td>
+                            <td>
+                                <span class="thanh-tien">0 ₫</span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-3">
+            <button type="submit" class="btn btn-success">Tạo đơn</button>
+            <a href="@Url.Action("Index","DonHang", new{area="Admin"})" class="btn btn-secondary ms-2">Quay lại</a>
+        </div>
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="alert alert-danger mt-3">
+                @Html.ValidationSummary(true)
+            </div>
+        }
+    </div>
+}
+@section Scripts{
+    <script>
+        function updateTotal() {
+            let tong = 0;
+            $("#productTable tbody tr").each(function () {
+                let $tr = $(this);
+                let cb = $tr.find('input[type="checkbox"]').first();
+                let selected = cb.prop("checked");
+                if (selected) {
+                    let sl = parseInt($tr.find(".sl-input").val()) || 0;
+                    let gia = parseFloat($tr.find('input[name$=".GiaBan"]').val()) || 0;
+                    let giam = parseFloat($tr.find('input[name$=".GiamGia"]').val()) || 0;
+                    let giaSauGiam = gia * (1 - giam / 100);
+                    let tien = giaSauGiam * sl;
+                    $tr.find(".thanh-tien").text(tien.toLocaleString() + " ₫");
+                    tong += tien;
+                } else {
+                    $tr.find(".thanh-tien").text("0 ₫");
+                }
+            });
+            $("#tongTien").text(tong.toLocaleString() + " ₫");
+        }
+
+        function updateRow(input) {
+            let $tr = $(input).closest("tr");
+            let max = parseInt($tr.find('input[name$=".SoLuongTon"]').val());
+            let val = parseInt($(input).val());
+            if (val > max) {
+                $(input).val(max);
+            } else if (val < 1 || isNaN(val)) {
+                $(input).val(1);
+            }
+            updateTotal();
+        }
+
+        function toggleRow(cb) {
+            let $tr = $(cb).closest("tr");
+            let slInp = $tr.find(".sl-input");
+            if ($(cb).prop("checked")) {
+                $tr.addClass("selected");
+                slInp.prop("disabled", false);
+            } else {
+                $tr.removeClass("selected");
+                slInp.prop("disabled", true).val(1);
+            }
+            updateTotal();
+        }
+
+        // Search sản phẩm
+        $("#searchSanPham").on("keyup", function () {
+            let search = $(this).val().toLowerCase();
+            $("#productTable tbody tr").each(function () {
+                let txt = $(this).find("td:eq(1)").text().toLowerCase();
+                $(this).toggle(txt.indexOf(search) >= 0);
+            });
+        });
+
+        // Auto update tổng tiền khi thay đổi số lượng
+        $(document).on("input", ".sl-input", function () {
+            updateRow(this);
+        });
+
+        $(document).on("change", 'input[type="checkbox"][name^="SanPhamChons"]', function () {
+            toggleRow(this);
+        });
+
+        // Init tổng tiền khi load lại
+        $(function () { updateTotal(); });
+    </script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

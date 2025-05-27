@@ -1,0 +1,41 @@
+﻿@model WebApplication1.ViewModels.KhachHangDetailsViewModel
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    ViewBag.Title = "Chi tiết khách hàng";
+}
+@section Styles {
+    <style>
+        .avatar-lg {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #eee;
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            font-weight: bold;
+        }
+    </style>
+}
+<h2>Chi tiết khách hàng</h2>
+<div class="card p-4" style="max-width:440px;">
+    <div class="text-center mb-3">
+        <img class="avatar-lg" src="@Url.Content(Model.AnhDaiDien == null ? "~/Asset/images/default-avatar.png" : "~/Asset/images/" + Model.AnhDaiDien)" alt="avatar" />
+    </div>
+    <div class="mb-2">
+        <span class="form-label">Mã khách hàng:</span> @Model.MaKH
+    </div>
+    <div class="mb-2">
+        <span class="form-label">Tên khách hàng:</span> @Model.TenKH
+    </div>
+    <div class="mb-2">
+        <span class="form-label">Số điện thoại:</span> @Model.SoDienThoai
+    </div>
+    <div class="mb-2">
+        <span class="form-label">Email:</span> @Model.Email
+    </div>
+    @* Bổ sung các trường khác nếu có *@
+    @Html.ActionLink("Quay lại", "Index", null, new { @class = "btn btn-secondary mt-3" })
+</div>

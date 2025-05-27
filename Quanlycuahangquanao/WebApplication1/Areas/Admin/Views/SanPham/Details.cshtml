@@ -1,0 +1,70 @@
+﻿@model WebApplication1.Models.SanPham
+
+@{
+    ViewBag.Title = "Chi tiết sản phẩm";
+}
+<h2>Chi tiết sản phẩm</h2>
+
+<div class="row">
+    <div class="col-md-4">
+        @if (!string.IsNullOrEmpty(Model.HinhAnh))
+        {
+            <img src="@Url.Content(Model.HinhAnh)" class="img-fluid rounded mb-3" />
+        }
+    </div>
+    <div class="col-md-8">
+        <dl class="row">
+            <dt class="col-sm-3">Mã SP</dt>
+            <dd class="col-sm-9">@Model.MaSP</dd>
+
+            <dt class="col-sm-3">Tên</dt>
+            <dd class="col-sm-9">@Model.TenSP</dd>
+
+            <dt class="col-sm-3">Giá bán</dt>
+            <dd class="col-sm-9">@String.Format("{0:N0}₫", Model.GiaBan.GetValueOrDefault(0))</dd>
+
+            <dt class="col-sm-3">Số lượng</dt>
+            <dd class="col-sm-9">@Model.SoLuong.GetValueOrDefault(0)</dd>
+
+            <dt class="col-sm-3">Khuyến mãi</dt>
+            <dd class="col-sm-9">@Model.GiamGia.GetValueOrDefault(0) %</dd>
+
+            <dt class="col-sm-3">Trạng thái</dt>
+            <dd class="col-sm-9">
+                <span class="badge @(Model.TrangThai == "True"
+                        ? "bg-success"
+                        : "bg-secondary")">
+                    @(Model.TrangThai == "True" ? "Mở bán" : "Ngưng bán")
+                </span>
+            </dd>
+
+            <dt class="col-sm-3">Sản phẩm mới</dt>
+            <dd class="col-sm-9">
+                <input type="checkbox" disabled class="form-check-input"
+                       @(Model.LaSanPhamMoi.GetValueOrDefault(false) ? "checked" : "")
+                       style="accent-color:#0d6efd;" />
+            </dd>
+
+            <dt class="col-sm-3">Danh mục</dt>
+            <dd class="col-sm-9">
+                @foreach (var dm in Model.DanhMucs)
+                {
+                    <span class="badge bg-secondary me-1">@dm.TenDanhMuc</span>
+                }
+            </dd>
+
+            <dt class="col-sm-3">Mô tả</dt>
+            <dd class="col-sm-9">@Model.MoTa</dd>
+
+            <dt class="col-sm-3">Kích thước</dt>
+            <dd class="col-sm-9">@Model.KichThuoc</dd>
+        </dl>
+
+        <p>
+            @Html.ActionLink("Chỉnh sửa", "Edit", new { area = "Admin", id = Model.MaSP },
+                              new { @class = "btn btn-primary me-2" })
+            @Html.ActionLink("Quay lại", "Index", new { area = "Admin" },
+                              new { @class = "btn btn-secondary" })
+        </p>
+    </div>
+</div>

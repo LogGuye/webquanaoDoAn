@@ -1,0 +1,101 @@
+﻿@using System.Web.Mvc;
+@model WebApplication1.Models.DonHang
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    ViewBag.Title = "Chi tiết đơn hàng";
+}
+@section Styles {
+    <style>
+        .main-card {
+            max-width: 900px;
+            margin: 32px auto;
+            padding: 28px;
+            background: var(--main-card-bg, #24262d);
+            border-radius: 16px;
+        }
+
+        .table-custom th, .table-custom td {
+            text-align: center;
+        }
+
+        .table-custom {
+            background: var(--table-bg, #16171b);
+            color: var(--main-txt, #fff);
+            border-radius: 10px;
+        }
+
+        :root, body {
+            --main-card-bg: #24262d;
+            --table-bg: #181a20;
+            --main-txt: #fff;
+        }
+
+            body:not(.dark-mode) {
+                --main-card-bg: #fff;
+                --table-bg: #f9f9fb;
+                --main-txt: #23262d;
+            }
+    </style>
+}
+<div class="main-card">
+    <h2>Chi tiết đơn hàng #@Model.MaDonHang</h2>
+    <p><b>Khách hàng:</b> @Model.KhachHang.TenKH</p>
+    <b>SĐT:</b> @Model.KhachHang.SoDienThoai <br />
+    <b>Email:</b> @Model.KhachHang.Email <br />
+    <p><b>Địa chỉ giao:</b> @Model.GiaoHang.DiaChiNhan</p>
+    <p><b>Thời gian đặt:</b> @Model.NgayDat</p>
+    <p><b>Trạng thái:</b> @Model.TrangThai</p>
+    <div class="table-responsive mt-3">
+        <table class="table table-custom">
+            <thead>
+                <tr>
+                    <th>Sản phẩm</th>
+                    <th>Giá</th>
+                    <th>Giảm (%)</th>
+                    <th>Sau giảm</th>
+                    <th>Số lượng</th>
+                    <th>Thành tiền</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var ct in Model.ChiTietDonHangs)
+                {
+                    var sp = ct.SanPham;
+                    var gia = sp.GiaBan ?? 0;
+                    var giam = sp.GiamGia ?? 0;
+                    decimal giaSauGiam = (decimal)gia * (1 - (decimal)giam / 100);
+                    int sl = ct.SoLuong ?? 0;
+                    <tr>
+                        <td>@sp.TenSP</td>
+                        <td>@string.Format("{0:N0}đ", gia)</td>
+                        <td>@giam</td>
+                        <td>@string.Format("{0:N0}đ", giaSauGiam)</td>
+                        <td>@sl</td>
+                        <td>@string.Format("{0:N0}đ", giaSauGiam * sl)</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="5" class="text-end"><b>Tổng cộng:</b></td>
+                    <td>
+                        @{
+                            decimal tong = 0;
+                            foreach (var ct in Model.ChiTietDonHangs)
+                            {
+                                var sp = ct.SanPham;
+                                decimal gia = (decimal)(sp.GiaBan ?? 0);
+                                decimal giam = (decimal)(sp.GiamGia ?? 0);
+                                int sl = ct.SoLuong ?? 0;
+                                decimal giaSauGiam = gia * (1 - giam / 100);
+                                tong += giaSauGiam * sl;
+                            }
+                        }
+                        @tong.ToString("N0") đ
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    <a href="@Url.Action("Index", "DonHang", new { area="Admin" })" class="btn btn-secondary mt-3">Quay lại</a>
+</div>

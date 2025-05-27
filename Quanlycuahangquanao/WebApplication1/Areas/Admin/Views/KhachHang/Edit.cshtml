@@ -1,0 +1,67 @@
+﻿@model WebApplication1.ViewModels.KhachHangEditViewModel
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    ViewBag.Title = "Sửa khách hàng";
+}
+@section Styles {
+    <style>
+        .img-preview {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #eee;
+            display: block;
+            margin-bottom: 12px;
+        }
+    </style>
+}
+<h2>Sửa khách hàng</h2>
+@using (Html.BeginForm("Edit", "KhachHang", FormMethod.Post, new { enctype = "multipart/form-data", area = "Admin" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.MaKH)
+    <div class="mb-3">
+        @Html.LabelFor(m => m.TenKH)
+        @Html.TextBoxFor(m => m.TenKH, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.TenKH, null, new { @class = "text-danger" })
+    </div>
+    <div class="mb-3">
+        @Html.LabelFor(m => m.SoDienThoai)
+        @Html.TextBoxFor(m => m.SoDienThoai, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.SoDienThoai, null, new { @class = "text-danger" })
+    </div>
+    <div class="mb-3">
+        @Html.LabelFor(m => m.Email)
+        @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Email, null, new { @class = "text-danger" })
+    </div>
+    <div class="mb-3">
+        @Html.LabelFor(m => m.AnhDaiDien)
+        <input type="file" name="AnhDaiDienFile" class="form-control" accept="image/*" onchange="previewAvatar(this)" />
+        <img id="avatarPreview" src="@Url.Content(Model.AnhDaiDien == null ? "~/Asset/images/default-avatar.png" : "~/Asset/images/" + Model.AnhDaiDien)" class="img-preview" />
+        @Html.ValidationMessage("AnhDaiDienFile", new { @class = "text-danger" })
+    </div>
+    <button type="submit" class="btn btn-warning" onclick="return confirm('Bạn có chắc muốn lưu các thay đổi không?')">Lưu</button>
+    @Html.ActionLink("Quay lại", "Index", null, new { @class = "btn btn-secondary ms-2" })
+
+    if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger">@ViewBag.Error</div>
+    }
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        function previewAvatar(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    $('#avatarPreview').attr('src', e.target.result);
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+}

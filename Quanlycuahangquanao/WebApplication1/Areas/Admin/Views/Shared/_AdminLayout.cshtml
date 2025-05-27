@@ -1,0 +1,281 @@
+﻿@using System.Linq
+@using System.Collections.Generic
+
+@{
+    Layout = null;
+    // Thông tin người dùng và thông báo truyền từ controller
+    var avatar = "/Assets/Avatar/avatar-default.png"; // Đặt lại đường dẫn mặc định
+    string tenKH = "";
+    int? maLoaiTK = null;
+
+    if (Session["MaKH"] != null)
+    {
+        using (var db = new WebApplication1.Models.QLCHQA())
+        {
+            int id = Convert.ToInt32(Session["MaKH"]);
+            var kh = db.KhachHangs.FirstOrDefault(x => x.MaKH == id);
+            if (kh != null)
+            {
+                tenKH = kh.TenKH ?? "";   // ĐÚNG tên khách hàng từ DB
+                if (!string.IsNullOrEmpty(kh.AnhDaiDien))
+                    { avatar = kh.AnhDaiDien; }// ĐÚNG avatar từ DB 
+            }
+            else
+            {
+                tenKH = Session["TenDangNhap"] as string; // fallback nếu không có KH
+            }
+        }
+        maLoaiTK = (Session["MaLoaiTK"] != null) ? Convert.ToInt32(Session["MaLoaiTK"]) : (int?)null;
+    }
+    var notifications = ViewBag.Notifications as IEnumerable<string> ?? new List<string>();
+    var notifCount = notifications.Count();  // không dùng ?.
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    @RenderSection("Styles", required: false)
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title - Bụi Sao Admin</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+    <!-- Bootstrap & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+
+    <style>
+        body {
+            overflow-x: hidden;
+            transition: background .3s, color .3s;
+        }
+        /* Topbar */
+        .topbar {
+            height: 60px;
+            background: #fff;
+            border-bottom: 1px solid #dee2e6;
+            padding: 0 1rem;
+        }
+
+        .site-logo {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .site-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-left: .5rem;
+        }
+
+
+
+        /* Sidebar */
+        .sidebar {
+            width: 240px;
+            background: #f8f9fa;
+            min-height: 100vh;
+        }
+
+            .sidebar .nav-link {
+                color: #333;
+            }
+
+                .sidebar .nav-link.active {
+                    background: #0d6efd;
+                    color: #fff;
+                }
+
+                .sidebar .nav-link i {
+                    width: 1.25rem;
+                }
+        /* Dark mode */
+        body.dark-mode {
+            background: #2e2e2e;
+            color: #eee;
+        }
+
+            body.dark-mode .topbar {
+                background: #1f1f1f;
+                order-color: #444;
+            }
+
+            body.dark-mode .sidebar {
+                background: #1f1f1f;
+            }
+
+                body.dark-mode .sidebar .nav-link {
+                    color: #ccc;
+                }
+
+                    body.dark-mode .sidebar .nav-link.active {
+                        background: #0d6efd;
+                    }
+
+        /* Logo text mặc định (light mode) */
+        .topbar .site-title {
+            color: #333 !important;
+        }
+
+        /* Logo text khi bật dark mode */
+        body.dark-mode .topbar .site-title {
+            color: #f1f1f1 !important;
+        }
+    </style>
+</head>
+<body class="light-mode">
+
+    <!-- Topbar -->
+    <header class="topbar d-flex justify-content-between align-items-center">
+        <!-- Logo & Title -->
+        <a href="~/" class="d-flex align-items-center text-decoration-none">
+            <img src="~/Assets/Avatar/Logo.jpg" alt="Logo" class="site-logo" />
+            <span class="site-title text-dark">Fashion Planet</span>
+        </a>
+
+        <!-- Right controls -->
+        <div class="d-flex align-items-center">
+
+            <!-- Dark/Light switch -->
+            <div class="form-check form-switch me-3">
+                <input class="form-check-input" type="checkbox" id="darkSwitch">
+                <label class="form-check-label mb-0" for="darkSwitch">
+                    <i class="bi bi-sun-fill light-icon"></i>
+                    <i class="bi bi-moon-stars-fill dark-icon"></i>
+                </label>
+            </div>
+
+            <!-- Notifications -->
+            <div class="dropdown me-3 position-relative">
+                <button class="btn btn-outline-secondary position-relative" type="button"
+                        id="notifDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-bell"></i>
+                    @if (notifCount > 0)
+                    {
+                        <span class="badge bg-danger rounded-circle position-absolute top-0 start-100 translate-middle p-1">
+                            @notifCount
+                        </span>
+                    }
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notifDropdown" style="min-width: 250px;">
+                    <li class="dropdown-header">Thông báo (@notifCount)</li>
+                    <li><hr class="dropdown-divider"></li>
+                    @if (notifCount == 0)
+                    {
+                        <li class="px-3 py-2 text-muted">Không có thông báo</li>
+                    }
+                    else
+                    {
+                        foreach (var n in notifications)
+                        {
+                            <li class="px-3 py-2">@n</li>
+                        }
+                    }
+                </ul>
+            </div>
+
+            <!-- User info -->
+            <div class="d-flex align-items-center">
+                <span class="me-2">@tenKH</span>
+                <img src="@avatar" alt="avatar" class="rounded-circle" width="40" height="40" />
+            </div>
+        </div>
+    </header>
+
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <nav class="sidebar p-2">
+            <ul class="nav nav-pills flex-column">
+                <li class="nav-item mb-1">
+                    <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString()=="Admin"?"active":"")"
+                       href="@Url.Action("Index","HomeAdmin", new { area="Admin" })">
+                        <i class="bi bi-speedometer2"></i> Trang chủ
+                    </a>
+                </li>
+                <li class="nav-item mb-1">
+                    <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString()=="DanhMuc"?"active":"")"
+                       href="@Url.Action("Index","DanhMuc", new { area="Admin" })">
+                        <i class="bi bi-bookmarks"></i> Danh mục
+                    </a>
+                </li>
+                <li class="nav-item mb-1">
+                    <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString()=="SanPham"?"active":"")"
+                       href="@Url.Action("Index","SanPham", new { area="Admin" })">
+                        <i class="bi bi-tags"></i> Sản phẩm
+                    </a>
+                </li>
+                <li class="nav-item mb-1">
+                    <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString()=="DonHang"?"active":"")"
+                       href="@Url.Action("Index","DonHang", new { area="Admin" })">
+                        <i class="bi bi-cart-fill"></i> Đơn hàng
+                    </a>
+                </li>
+                <li class="nav-item mb-1">
+                    <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString()=="KhachHang"?"active":"")"
+                       href="@Url.Action("Index","KhachHang", new { area="Admin" })">
+                        <i class="bi bi-people-fill"></i> Người dùng
+                    </a>
+                </li>
+                <li class="nav-item mb-1">
+                    <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString()=="TaiKhoan"?"active":"")"
+                       href="@Url.Action("Index","TaiKhoan", new { area="Admin" })">
+                        <i class="bi bi-key-fill"></i> Tài khoản
+                    </a>
+                </li>
+                <li class="nav-item mb-1">
+                    <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString()=="Banner"?"active":"")"
+                       href="@Url.Action("Index","Banner", new { area="Admin" })">
+                        <i class="bi bi-image-fill"></i> Biểu ngữ
+                    </a>
+                </li>
+                <li class="nav-item mt-3">
+                    <a class="nav-link text-danger" href="@Url.Action("Logout","TaiKhoan", new { area="Admin" })">
+                        <i class="bi bi-box-arrow-right"></i> Đăng xuất
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main content -->
+        <main class="flex-grow-1 p-4">
+            @* Thông báo thành công / lỗi *@
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show">
+                    @TempData["Success"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show">
+                    @TempData["Error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            @RenderBody()
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Dark/Light toggle logic
+        const darkSwitch = document.getElementById("darkSwitch");
+        darkSwitch.onchange = () => {
+            document.body.classList.toggle("dark-mode");
+            document.body.classList.toggle("light-mode");
+            localStorage.setItem("theme", document.body.classList.contains("dark-mode") ? "dark" : "light");
+        };
+        // Khôi phục theme
+        if (localStorage.getItem("theme") === "dark") {
+            darkSwitch.checked = true;
+            document.body.classList.replace("light-mode", "dark-mode");
+        }
+    </script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
