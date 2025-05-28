@@ -1,29 +1,143 @@
 ﻿@model WebApplication1.Models.KhachHang
+
 @{
     ViewBag.Title = "Sửa thông tin tài khoản";
-    var avatar = string.IsNullOrEmpty(Model.AnhDaiDien) ? "/Assets/Avatar/avatar-default.png" : Model.AnhDaiDien;
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="profile-container" style="max-width:480px;margin:38px auto;padding:32px;background:#fff;border-radius:16px;box-shadow:0 4px 24px #0001;">
-    <h2 style="text-align:center;font-weight:bold;margin-bottom:24px;">Sửa thông tin tài khoản</h2>
-    @using (Html.BeginForm("EditProfile", "Account", FormMethod.Post, new { enctype = "multipart/form-data" }))
+<style>
+    .profile-edit-box {
+        max-width: 410px;
+        margin: 56px auto 40px auto;
+        padding: 36px 32px 32px 32px;
+        background: #fff;
+        border-radius: 18px;
+        box-shadow: 0 8px 32px #2294ce15;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .profile-edit-title {
+        font-size: 1.6rem;
+        font-weight: 700;
+        margin-bottom: 19px;
+        letter-spacing: 1px;
+        color: #23262d;
+        text-align: center;
+    }
+
+    .profile-edit-avatar {
+        width: 112px;
+        height: 112px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #6ad0f8;
+        box-shadow: 0 2px 16px #6ad0f821;
+        margin-bottom: 17px;
+    }
+
+    .profile-edit-form label {
+        font-weight: 600;
+        color: #146eab;
+        margin-bottom: 7px;
+        display: block;
+    }
+
+    .profile-edit-form input[type="text"],
+    .profile-edit-form input[type="email"],
+    .profile-edit-form input[type="file"] {
+        width: 100%;
+        padding: 11px 15px;
+        margin-bottom: 17px;
+        border-radius: 10px;
+        border: 1.5px solid #dae3ec;
+        background: #f7fafe;
+        font-size: 1.11rem;
+        transition: border 0.18s;
+        box-sizing: border-box;
+        display: block;
+    }
+
+        .profile-edit-form input[type="text"]:focus,
+        .profile-edit-form input[type="email"]:focus {
+            border: 1.5px solid #0cb3e1;
+            outline: none;
+            background: #fff;
+        }
+
+    .profile-edit-btns {
+        display: flex;
+        width: 100%;
+        justify-content: center;
+        gap: 18px;
+        margin-top: 4px;
+    }
+
+    .profile-edit-btn {
+        flex: 1;
+        padding: 10px 0;
+        border-radius: 11px;
+        border: none;
+        font-weight: 700;
+        font-size: 1.1rem;
+        background: linear-gradient(90deg,#19b0ff 0,#2fc9ff 100%);
+        color: #fff;
+        transition: background 0.13s;
+        box-shadow: 0 2px 12px #05c9ff22;
+    }
+
+        .profile-edit-btn:hover {
+            background: #0096ff;
+        }
+
+    .profile-edit-cancel {
+        flex: 1;
+        padding: 10px 0;
+        border-radius: 11px;
+        border: none;
+        background: #e4e7ea;
+        color: #5b6169;
+        font-weight: 700;
+        font-size: 1.1rem;
+        transition: background 0.15s;
+        text-align: center;
+        text-decoration: none;
+        box-shadow: 0 1px 7px #aaa2;
+    }
+
+        .profile-edit-cancel:hover {
+            background: #d1d4da;
+            color: #2c2c2c;
+        }
+
+    .profile-edit-form {
+        width: 100%;
+    }
+</style>
+
+<div class="profile-edit-box">
+    <div class="profile-edit-title">Sửa thông tin tài khoản</div>
+    <img class="profile-edit-avatar" src="@((string.IsNullOrEmpty(Model.AnhDaiDien) ? Url.Content("~/Assets/Avatar/avatar-default.png") : Url.Content(Model.AnhDaiDien)))" alt="Avatar" />
+
+    @using (Html.BeginForm("EditProfile", "Account", FormMethod.Post, new { enctype = "multipart/form-data", @class = "profile-edit-form" }))
     {
         @Html.AntiForgeryToken()
-        <div style="text-align:center;">
-            <img src="@avatar" style="width:100px;height:100px;border-radius:50%;object-fit:cover;border:3px solid #22aaff;margin-bottom:12px;" /><br />
-            <input type="file" name="AnhDaiDien" accept="image/*" style="margin-top:7px;" />
-        </div>
-        <div style="margin:16px 0;">
-            <label>Họ tên</label>
-            <input type="text" name="TenKH" value="@Model.TenKH" class="form-control" style="width:100%;padding:8px 10px;margin-bottom:8px;" required />
-            <label>Email</label>
-            <input type="email" name="Email" value="@Model.Email" class="form-control" style="width:100%;padding:8px 10px;margin-bottom:8px;" required />
-            <label>Số điện thoại</label>
-            <input type="text" name="SoDienThoai" value="@Model.SoDienThoai" class="form-control" style="width:100%;padding:8px 10px;" required />
-        </div>
-        <div style="text-align:center;margin-top:15px;">
-            <button type="submit" class="btn" style="padding:9px 38px;border-radius:23px;background:#008bff;color:#fff;font-weight:bold;">Lưu thay đổi</button>
-            <a href="@Url.Action("Profile")" style="margin-left:15px;color:#008bff;text-decoration:underline;">Hủy</a>
+        <label>Ảnh đại diện</label>
+        <input type="file" name="AnhDaiDien" accept="image/*" />
+
+        <label for="TenKH">Họ tên</label>
+        @Html.TextBoxFor(m => m.TenKH, new { @class = "form-control", placeholder = "Nhập họ tên" })
+
+        <label for="Email">Email</label>
+        @Html.TextBoxFor(m => m.Email, new { @class = "form-control", type = "email", placeholder = "Nhập email" })
+
+        <label for="SoDienThoai">Số điện thoại</label>
+        @Html.TextBoxFor(m => m.SoDienThoai, new { @class = "form-control", placeholder = "Nhập số điện thoại" })
+
+        <div class="profile-edit-btns">
+            <button type="submit" class="profile-edit-btn">Lưu thay đổi</button>
+            <a href="@Url.Action("Profile", "Account")" class="profile-edit-cancel">Huỷ</a>
         </div>
     }
 </div>

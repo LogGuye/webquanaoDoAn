@@ -1,11 +1,12 @@
-﻿@model IEnumerable<WebApplication1.Models.SanPham>
+﻿@model List<WebApplication1.Models.SanPham>
 @{
-    ViewBag.Title = "Fashion Planet | Trang chủ";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    var danhMuc = ViewBag.DanhMuc;
+    var selectedCategoryId = ViewBag.SelectedCategoryId as int? ?? 0;
     var allCategories = ViewBag.AllCategories as List<WebApplication1.Models.DanhMuc>;
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
 <style>
+
     .banner-home {
         width: 100%;
         max-width: 1100px;
@@ -15,6 +16,9 @@
         border-radius: 22px;
         text-align: center;
         padding: 42px 10px 32px 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         font-weight: bold;
         font-size: 2.1rem;
         letter-spacing: 2px;
@@ -35,6 +39,7 @@
             font-weight: 400;
             margin-top: 10px;
         }
+
 
     .categories-bar {
         display: flex;
@@ -75,9 +80,6 @@
             margin-top: 2px;
             font-size: 1.04rem;
         }
-
-
-
 
     .products-list {
         width: 100%;
@@ -223,24 +225,18 @@
         }
 </style>
 
-
-<head>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
-</head>
-
-
 <div class="banner-home">
     <div class="banner-title">
-        <span style="font-size:2rem;">🌟</span> Fashion Planet <span style="font-size:2rem;">🌟</span>
+        <span style="font-size:2rem;">🌟</span> @(danhMuc != null ? danhMuc.TenDanhMuc : "") <span style="font-size:2rem;">🌟</span>
     </div>
-    <div class="banner-sub">Thời trang hàng hiệu – Giá tận xưởng</div>
 </div>
+
 
 <div class="categories-bar">
     @foreach (var dm in allCategories)
     {
         <a href="@Url.Action("ChiTiet", "List", new { id = dm.MaDanhMuc })"
-           class="category-item">
+           class="category-item @(selectedCategoryId == dm.MaDanhMuc ? "active" : "")">
             <span>@dm.TenDanhMuc</span>
         </a>
     }
@@ -263,3 +259,4 @@
         </div>
     }
 </div>
+

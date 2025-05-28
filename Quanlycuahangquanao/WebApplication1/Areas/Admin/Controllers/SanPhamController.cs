@@ -265,10 +265,10 @@ namespace WebApplication1.Areas.Admin.Controllers
             // Xử lý file ảnh mới upload (nếu có)
             if (ImageFile != null && ImageFile.ContentLength > 0)
             {
-                var fn = $"{Guid.NewGuid()}_{Path.GetFileName(ImageFile.FileName)}";
-                var path = Server.MapPath("~/Assets/images/" + fn);
+                var fileName = Guid.NewGuid() + "_" + Path.GetFileName(ImageFile.FileName);
+                var path = Server.MapPath("~/Assets/images/" + fileName);
                 ImageFile.SaveAs(path);
-                p.HinhAnh = "/Assets/images/" + fn;
+                p.HinhAnh = "/Assets/images/" + fileName;
             }
 
             p.DanhMucs.Clear();

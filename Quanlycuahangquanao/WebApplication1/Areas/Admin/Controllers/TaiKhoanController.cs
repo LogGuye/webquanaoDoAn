@@ -9,6 +9,7 @@ using WebApplication1.ViewModels;
 using OfficeOpenXml;
 using System.IO;
 using WebApplication1.Filters;
+using System.Web;
 
 namespace WebApplication1.Areas.Admin.Controllers
 {
@@ -222,6 +223,22 @@ namespace WebApplication1.Areas.Admin.Controllers
         {
             if (disposing) db.Dispose();
             base.Dispose(disposing);
+        }
+
+        // Đăng xuất
+        public ActionResult Logout()
+        {
+            Session.Clear();
+            Session.Abandon();
+
+            // (Nếu có cookie đăng nhập thì xóa luôn)
+            if (Request.Cookies["auth"] != null)
+            {
+                var c = new HttpCookie("auth");
+                c.Expires = DateTime.Now.AddDays(-1);
+                Response.Cookies.Add(c);
+            }
+            return RedirectToAction("Login", "Account", new { area = "" });
         }
     }
 }

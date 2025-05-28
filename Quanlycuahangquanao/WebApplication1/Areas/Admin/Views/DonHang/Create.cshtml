@@ -128,12 +128,7 @@
                         var sp = Model.SanPhams[i];
                         <tr>
                             <td>
-                                <input type="hidden" name="SanPhamChons[@i].IsChecked" value="false" />
-                                <input type="checkbox"
-                                       name="SanPhamChons[@i].IsChecked"
-                                       value="true"
-                                       @(sp.IsChecked ? "checked" : "")
-                                       onchange="toggleRow(this)" />
+                                <input type="checkbox" name="SanPhamChons[@i].IsChecked" value="true" @(sp.IsChecked ? "checked" : "") onchange="toggleRow(this)" />
                             </td>
                             <td>
                                 @sp.TenSP

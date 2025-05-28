@@ -160,6 +160,52 @@
             from { opacity: 0; transform: translateY(-18px);}
             to { opacity: 1; transform: none;}
         }
+
+    .main-footer {
+    background: #222;
+    color: #fff;
+    padding: 36px 0 18px 0;
+    margin-top: 50px;
+    font-size: 1rem;
+    }
+    .footer-content {
+        display: flex;
+        flex-wrap: wrap;
+        max-width: 1100px;
+        margin: 0 auto;
+        justify-content: space-between;
+        gap: 36px;
+    }
+    .footer-col {
+        flex: 1 1 220px;
+        min-width: 180px;
+        margin-bottom: 16px;
+    }
+    .footer-title {
+        font-weight: bold;
+        color: #00bfff;
+        font-size: 1.13rem;
+        margin-bottom: 12px;
+    }
+    .footer-social a {
+        color: #fff;
+        font-size: 1.5rem;
+        margin-right: 15px;
+        transition: color .15s;
+        text-decoration: none;
+    }
+    .footer-social a:hover { color: #00bfff;}
+    .footer-copyright {
+        text-align: center;
+        color: #bbb;
+        padding: 16px 0 0 0;
+        font-size: 0.97rem;
+        border-top: 1px solid #444;
+        margin-top: 10px;
+    }
+    .media (max-width: 900px) {
+        .footer-content { flex-direction: column; gap: 10px; align-items: flex-start;}
+    }
     </style>
 </head>
 <body>
@@ -225,5 +271,33 @@
     <div class="container" style="margin-top:28px;">
         @RenderBody()
     </div>
+    <footer class="main-footer">
+        <div class="footer-content">
+            <div class="footer-col">
+                <div class="footer-title">Fashion Planet</div>
+                <p>
+                    Thời trang hàng hiệu - Giá tận xưởng.<br />
+                    Mua sắm an toàn - Giao hàng nhanh chóng.
+                </p>
+            </div>
+            <div class="footer-col">
+                <div class="footer-title">Liên hệ</div>
+                <p>Email: <a href="mailto:fashionplanet@gmail.com">nglong03042005@gmail.com</a></p>
+                <p>Hotline: <a href="tel:0829404505">0829404505</a></p>
+                <p>Địa chỉ: 123 Lê Lợi, Q.1, TP.HCM</p>
+            </div>
+            <div class="footer-col">
+                <div class="footer-title">Mạng xã hội</div>
+                <div class="footer-social">
+                    <a href="#"><i class="fab fa-facebook-square"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-tiktok"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-copyright">
+            &copy; @DateTime.Now.Year Fashion Planet. Phát triển bởi <b>Nguyễn Logn - Võ Quốc Hưng</b>.
+        </div>
 </body>
 </html>

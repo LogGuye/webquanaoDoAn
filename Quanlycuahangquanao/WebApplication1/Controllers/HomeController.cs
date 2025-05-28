@@ -13,29 +13,26 @@ namespace WebApplication1.Controllers
 
         public ActionResult Index(int? categoryId, string filter = null, double? minPrice = null, double? maxPrice = null)
         {
-            var products = db.SanPhams.Where(sp => sp.TrangThai == "Mở bán");
+            var products = db.SanPhams.Where(sp => sp.TrangThai == "True" && sp.LaSanPhamMoi == true);
 
-            // Nếu không có categoryId hoặc categoryId = 0 => hiển thị Sản phẩm mới
+            // Lấy tất cả danh mục để show menu + biết mục nào active
+            var allCategories = db.DanhMucs.ToList();
+
+            // Sản phẩm mới (khi chưa chọn danh mục)
             if (categoryId == null || categoryId == 0)
             {
-                products = products.Where(sp => sp.TrangThai == "Mở bán");
+                products = products.Where(sp => sp.LaSanPhamMoi == true);
             }
             else
             {
-                // Theo danh mục
                 products = products.Where(sp => sp.DanhMucs.Any(dm => dm.MaDanhMuc == categoryId));
-
-                // Lọc giá
-                if (minPrice != null)
-                    products = products.Where(sp => sp.GiaBan >= minPrice);
-                if (maxPrice != null)
-                    products = products.Where(sp => sp.GiaBan <= maxPrice);
+                if (minPrice != null) products = products.Where(sp => sp.GiaBan >= minPrice);
+                if (maxPrice != null) products = products.Where(sp => sp.GiaBan <= maxPrice);
             }
 
-            // Lấy danh mục để hiển thị filter sidebar
             ViewBag.CategoryId = categoryId ?? 0;
             ViewBag.Categories = db.DanhMucs.ToList();
-
+            ViewBag.AllCategories = allCategories;  
             return View(products.ToList());
         }
     }

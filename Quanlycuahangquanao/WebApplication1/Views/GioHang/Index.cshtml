@@ -1,0 +1,156 @@
+﻿@model List<WebApplication1.Models.GioHang>
+@{
+    ViewBag.Title = "Giỏ hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var total = Model.Sum(x => (x.SanPham.GiaBan ?? 0) * (x.SoLuong ?? 0));
+}
+<style>
+    .cart-main {
+        max-width: 900px;
+        margin: 40px auto;
+        background: #fff;
+        border-radius: 18px;
+        box-shadow: 0 6px 40px #0001;
+        padding: 32px;
+    }
+
+    .cart-title {
+        font-size: 2rem;
+        font-weight: bold;
+        margin-bottom: 26px;
+        color: #2186eb;
+    }
+
+    .cart-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 14px;
+    }
+
+        .cart-table th, .cart-table td {
+            text-align: center;
+            padding: 13px 8px;
+        }
+
+        .cart-table th {
+            background: #f6f8fb;
+            color: #222;
+            font-weight: bold;
+            border-radius: 8px;
+        }
+
+    .cart-item-row {
+        background: #fafdff;
+        border-radius: 12px;
+        transition: box-shadow .17s;
+    }
+
+        .cart-item-row:hover {
+            box-shadow: 0 2px 18px #aee2ff40;
+        }
+
+    .cart-img {
+        width: 68px;
+        height: 68px;
+        border-radius: 12px;
+        object-fit: cover;
+        background: #eee;
+    }
+
+    .cart-name {
+        font-weight: 600;
+        color: #34395e;
+    }
+
+    .cart-actions {
+        display: flex;
+        gap: 6px;
+        justify-content: center;
+    }
+
+        .cart-actions .btn {
+            padding: 4px 14px;
+            font-size: 0.97rem;
+        }
+
+    .cart-summary {
+        font-size: 1.18rem;
+        margin: 28px 0 8px 0;
+        text-align: right;
+    }
+
+    .cart-empty {
+        color: #d33;
+        font-size: 1.25rem;
+        font-weight: 500;
+        text-align: center;
+        margin-top: 40px;
+    }
+
+    .btn-order {
+        background: #ffb570;
+        color: #fff;
+        border: none;
+        border-radius: 14px;
+        padding: 11px 34px;
+        font-size: 1.13rem;
+        font-weight: 600;
+    }
+
+        .btn-order:hover {
+            background: #ff3a55;
+        }
+</style>
+
+<div class="cart-main">
+    <div class="cart-title">🛒 Giỏ hàng của bạn</div>
+    @if (Model == null || !Model.Any())
+    {
+        <div class="cart-empty">Giỏ hàng trống! Quay lại <a href="@Url.Action("Index", "Home")">trang chủ</a> để mua sắm nhé.</div>
+    }
+    else
+    {
+        <form method="post" action="@Url.Action("UpdateCart", "GioHang")">
+            <table class="cart-table">
+                <thead>
+                    <tr>
+                        <th>Ảnh</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Đơn giá</th>
+                        <th>Số lượng</th>
+                        <th>Thành tiền</th>
+                        <th>Xóa</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.Count; i++)
+                    {
+                        var item = Model[i];
+                        <tr class="cart-item-row">
+                            <td>
+                                <img class="cart-img" src="@(string.IsNullOrEmpty(item.SanPham.HinhAnh) ? Url.Content("~/Assets/images/images-default.png") : Url.Content(item.SanPham.HinhAnh))" alt="@item.SanPham.TenSP" />
+                            </td>
+                            <td class="cart-name">@item.SanPham.TenSP</td>
+                            <td>@(item.SanPham.GiaBan != null ?item.SanPham.GiaBan.ToString() : "0") đ</td>
+                            <td>
+                                <input type="number" name="items[@i].SoLuong" value="@item.SoLuong" min="1" max="99" style="width:60px; text-align:center; border-radius:8px;" />
+                                <input type="hidden" name="items[@i].MaSP" value="@item.MaSP" />
+                            </td>
+                            <td><b>@((item.SanPham.GiaBan ?? 0) * (item.SoLuong ?? 0)) đ</b></td>
+                            <td>
+                                <a href="@Url.Action("Remove", "GioHang", new { id = item.MaSP })" class="btn btn-danger" onclick="return confirm('Xóa sản phẩm này?');"><i class="fa fa-trash"></i></a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <div class="cart-summary">
+                Tổng tiền: <b style="color:#ff3a55;">@total.ToString("n0") đ</b>
+            </div>
+            <div style="text-align:right;">
+                <button type="submit" class="btn btn-primary" style="margin-right:14px;">Cập nhật giỏ hàng</button>
+                <a href="@Url.Action("Checkout", "GioHang")" class="btn btn-order">Đặt hàng</a>
+            </div>
+        </form>
+    }
+</div>

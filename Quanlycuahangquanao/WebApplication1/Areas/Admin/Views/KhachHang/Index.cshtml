@@ -95,12 +95,12 @@
                     background: #292b32 !important;
                 }
 
-        .img-avatar {
-            width: 42px;
-            height: 42px;
+        .img-thumb {
+            width: 46px;
+            height: 46px;
             object-fit: cover;
-            border-radius: 50%;
-            border: 2px solid #2b2e36;
+            border-radius: 10px;
+            border: 1.5px solid #2b2e36;
             background: #eee;
         }
 
@@ -237,36 +237,42 @@
                 {
                     foreach (var kh in Model.Items)
                     {
-                        <tr>
-                            <td>@kh.MaKH</td>
-                            <td>
-                                <img src="@Url.Content(string.IsNullOrEmpty(kh.AnhDaiDien) ? "~/Asset/images/default-avatar.png" : "~/Asset/images/" + kh.AnhDaiDien)"
-                                     class="img-avatar" alt="avatar" />
-                            </td>
-                            <td>@kh.TenKH</td>
-                            <td>@kh.SoDienThoai</td>
-                            <td>@kh.Email</td>
-                            <td>
-                                <a class="btn btn-view" title="Chi tiết"
-                                   href="@Url.Action("Details","KhachHang", new{area="Admin", id=kh.MaKH})">
-                                    <i class="bi bi-eye-fill"></i>
-                                </a>
-                                <a class="btn btn-edit" title="Chỉnh sửa"
-                                   href="@Url.Action("Edit","KhachHang", new{area="Admin", id=kh.MaKH})">
-                                    <i class="bi bi-pencil-fill"></i>
-                                </a>
-                                @using (Html.BeginForm("Delete", "KhachHang",
-                                    new { area = "Admin", id = kh.MaKH },
-                                    FormMethod.Post,
-                                    new { onsubmit = "return confirm('Bạn có chắc muốn xóa khách hàng này?');", @class = "d-inline" }))
-                                {
-                                    @Html.AntiForgeryToken()
-                                    <button type="submit" class="btn btn-del" title="Xóa">
-                                        <i class="bi bi-trash-fill"></i>
-                                    </button>
-                                }
-                            </td>
-                        </tr>
+            <tr>
+                <td>@kh.MaKH</td>
+                <td>
+                    @if (!string.IsNullOrEmpty(kh.AnhDaiDien))
+                    {
+                        <img src="@Url.Content(kh.AnhDaiDien)" class="img-thumb" alt="img" />
+                    }
+                    else
+                    {
+                        <img src="~/Asset/images/no-image.png" class="img-thumb" alt="img" />
+                    }
+                </td>
+                <td>@kh.TenKH</td>
+                <td>@kh.SoDienThoai</td>
+                <td>@kh.Email</td>
+                <td>
+                    <a class="btn btn-view" title="Chi tiết"
+                       href="@Url.Action("Details","KhachHang", new{area="Admin", id=kh.MaKH})">
+                        <i class="bi bi-eye-fill"></i>
+                    </a>
+                    <a class="btn btn-edit" title="Chỉnh sửa"
+                       href="@Url.Action("Edit","KhachHang", new{area="Admin", id=kh.MaKH})">
+                        <i class="bi bi-pencil-fill"></i>
+                    </a>
+                    @using (Html.BeginForm("Delete", "KhachHang",
+                        new { area = "Admin", id = kh.MaKH },
+                        FormMethod.Post,
+                        new { onsubmit = "return confirm('Bạn có chắc muốn xóa khách hàng này?');", @class = "d-inline" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-del" title="Xóa">
+                            <i class="bi bi-trash-fill"></i>
+                        </button>
+                    }
+                </td>
+            </tr>
                     }
                 }
             </tbody>

@@ -1,0 +1,94 @@
+﻿@model WebApplication1.ViewModels.CheckoutViewModel
+@{
+    ViewBag.Title = "Xác nhận đặt hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .checkout-card {
+        max-width: 540px;
+        margin: 36px auto 32px auto;
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 4px 24px #7899be24;
+        padding: 36px 28px 30px 28px;
+    }
+
+        .checkout-card h2 {
+            font-weight: bold;
+            color: #1695eb;
+            text-align: center;
+            margin-bottom: 22px;
+        }
+
+    .checkout-row {
+        margin-bottom: 18px;
+    }
+
+    .checkout-label {
+        font-weight: 600;
+        color: #233;
+    }
+
+    .checkout-input, .checkout-textarea {
+        width: 100%;
+        padding: 9px 12px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        font-size: 1.09rem;
+        background: #f8fafc;
+        margin-top: 5px;
+    }
+
+    .checkout-btn {
+        width: 100%;
+        padding: 12px;
+        border-radius: 12px;
+        background: #ffb570;
+        color: #fff;
+        font-weight: bold;
+        font-size: 1.14rem;
+        border: none;
+        margin-top: 18px;
+        transition: background 0.2s;
+        cursor: pointer;
+    }
+
+        .checkout-btn:hover {
+            background: #ff8a00;
+        }
+</style>
+
+<div class="checkout-card">
+    <h2>Xác nhận đặt hàng</h2>
+    @using (Html.BeginForm("DatHang", "GioHang", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="checkout-row">
+            <label class="checkout-label">Tên người nhận:</label>
+            @Html.TextBoxFor(m => m.TenNguoiNhan, new { @class = "checkout-input", placeholder = "Nhập tên người nhận..." })
+            @Html.ValidationMessageFor(m => m.TenNguoiNhan, "", new { @class = "text-danger" })
+        </div>
+        <div class="checkout-row">
+            <label class="checkout-label">Số điện thoại:</label>
+            @Html.TextBoxFor(m => m.SoDienThoai, new { @class = "checkout-input", placeholder = "Nhập số điện thoại..." })
+            @Html.ValidationMessageFor(m => m.SoDienThoai, "", new { @class = "text-danger" })
+        </div>
+        <div class="checkout-row">
+            <label class="checkout-label">Địa chỉ nhận hàng:</label>
+            @Html.TextBoxFor(m => m.DiaChiNhan, new { @class = "checkout-input", placeholder = "Nhập địa chỉ nhận hàng..." })
+            @Html.ValidationMessageFor(m => m.DiaChiNhan, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="checkout-row">
+            <label class="checkout-label">Phương thức thanh toán:</label>
+            <select name="PhuongThucThanhToan" class="checkout-input">
+                <option value="cod">Thanh toán khi nhận hàng (COD)</option>
+            </select>
+        </div>
+
+
+        <button type="submit" class="checkout-btn">Xác nhận đặt hàng</button>
+    }
+</div>
